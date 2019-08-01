@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>考勤工具</title>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
+    <!-- 生产环境版本，优化了尺寸和速度 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+</head>
+
+<body>
+    <div id='attendance'>
+        <!-- v-html 解决不能换行的问题 -->
+        <p class="text" v-html="content"></p>
+    </div>
+
+    <script>
+        var vm = new Vue({
+            el: '#attendance',
+            data: {
+                name: '吴英艳',
+                year: '',
+                month: '',
+                day: '',
+                content: '',
+                countOfCurMonth: '',
+                days: [],
+            },
+            created: function () {
+                this.initDate()
+                this.initDays()
+                this.getContent()
+            },
+            methods: {
+                getContent() {
+                    this.content = this.days.reduce((normal, next, index) => {
+                        var content = normal
+                        if (index == 0) {
+                            content += `${this.month}.1`
+                        } else if (index == 1) {
+                            if (this.days[index - 1] != this.days[index]) {
+                                content += `  ${this.days[index - 1]}<br>${this.month}.${index + 1}`
+                            }
+                        } else {
+                            if (this.days[index - 1] != this.days[index]) {
+                                content += `-${this.month}.${index}   ${this.days[index - 1]}<br>`
+                                if (index < this.countOfCurMonth - 1) {
+                                    content += `${this.month}.${index + 1}`
+                                } else {
+                                    content += `${this.month}.${index + 1}  ${this.days[index]}`
+                                }
+                            } else {
+                                if (index == this.countOfCurMonth - 1) {
+                                    content += `-${this.month}.${index + 1}   ${this.days[index]}`
+                                }
+                            }
+                        }
+                        return content
+                    }, `${this.name}-${this.year}.${this.month}考勤说明：<br>`)
+                },
+                initDays() {
+                    var days = [], i = 1
+                    while (i <= this.countOfCurMonth) {
+                        days.push(this.getAttendanceOfDay(i))
+                        i++
+                    }
+                    this.days = days
+                },
+                initDate() {
+                    var date = new Date()
+                    var year = date.getFullYear()
+                    var month = date.getMonth() + 1
+                    var day = date.getDate()
+                    var d = new Date(year, month, 0)
+                    this.countOfCurMonth = d.getDate()
+                    this.year = year
+                    this.month = month
+                    this.day = day
+                },
+                //根据年月的某一天返回当天是周末休息还是公司上班
+                getAttendanceOfDay(day) {
+                    var year = this.year, month = this.month
+                    var days = 0;  //表示改日期为当年的第几天
+                    //累加月天数
+                    for (var i = 1; i < month; i++) {
+                        days +=new Date(year, month, 0).getDate()
+                    }
+                    day = day * 1;
+                    days += day;  //月天数之和加上日天数
+                    var date0 = new Date(year, 0, 1);   //当年的第一天是周几
+                    //   alert(date0.getDay());
+                    var date1 = new Date(year, month - 1, day); //将日期值格式化,0-11代表1月-12月；
+                    //   alert((days + date0.getDay()+6)/7);
+                    var nthOfWeek = Math.floor((days + date0.getDay() + 6) / 7);  //向下取整
+                    //   alert(nthOfWeek);
+                    // var toDay = new Array("星期天", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六");
+                    var toDay = new Array("周末休息", "公司上班", "公司上班", "公司上班", "公司上班", "公司上班", "周末休息");
+                    //day.getDay();根据Date返一个星期中的某其中0为星期日 
+                    // alert("该日期是一年中的第" + days + "天\n" + "     是第" + nthOfWeek + "周的" + toDay[date1.getDay()]);
+                    return toDay[date1.getDay()]
+                }
+            }
+        })
+    </script>
+</body>
+
+
+</html>
