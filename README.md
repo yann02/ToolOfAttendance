@@ -3,3 +3,5 @@
 
 使用：
 修改data.name为自己的名字，用浏览器打开文件即可自动生成当月考勤。
+![image](https://github.com/yann02/ToolOfAttendance/images/change_name.png)
+![image](https://github.com/yann02/ToolOfAttendance/images/show.png)
